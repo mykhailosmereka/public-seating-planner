@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "defaultMode": "default",
+    "allow": [
+      "Bash(dotnet build*)",
+      "Bash(dotnet test*)",
+      "Bash(dotnet run*)",
+      "Bash(dotnet ef*)",
+      "Bash(dotnet restore*)",
+      "Bash(dotnet format*)",
+      "Bash(dotnet nuget*)",
+      "Bash(npm run lint)",
+      "Bash(npm run build)",
+      "Bash(npm run test)",
+      "Bash(npm run typecheck)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git fetch*)",
+      "Bash(docker compose *)"
+    ],
+    "ask": [
+      "Bash(dotnet ef database update*)",
+      "Bash(dotnet ef migrations remove*)",
+      "Bash(npm install*)",
+      "Bash(npm audit fix*)",
+      "Bash(git commit*)",
+      "Bash(git push*)",
+      "Bash(git checkout*)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(~/.claude/.env)",
+      "Read(//mnt/c/Users/*/.claude/.env)",
+
+      "Read(**/.ssh/**)",
+      "Read(~/.ssh/**)",
+      "Read(//mnt/c/Users/*/.ssh/**)",
+      "Read(**/.aws/**)",
+      "Read(~/.aws/**)",
+      "Read(//mnt/c/Users/*/.aws/**)",
+      "Read(~/.gnupg/**)",
+
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/appsettings.Production.json)",
+
+      "Edit(**/.claude/settings.json)",
+      "Edit(**/.claude/settings.local.json)",
+      "Edit(~/.claude/settings.json)",
+      "Edit(//mnt/c/Users/*/.claude/settings.json)",
+
+      "Bash(rm -rf*)",
+      "Bash(dotnet ef database drop*)",
+      "Bash(dotnet user-secrets*)",
+      "Bash(git reset*)",
+      "Bash(git push --force *)",
+      "Bash(sudo *)"
+    ]
+  },
+  "env": {
+    "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB": "1"
+  },
+  "sandbox": {
+    "enabled": true,
+    "filesystem": {
+      "denyRead": ["**/.ssh", "**/.aws", "**/.env", "**/.env.*", "**/*.pem", "**/*.key", "**/appsettings.Production.json", "~/.microsoft/usersecrets"]
+    },
+    "network": {
+      "allowedDomains": [
+        "api.anthropic.com", 
+        "registry.npmjs.org", 
+        "github.com", 
+        "api.nuget.org", 
+        "www.nuget.org",
+        "dotnet.microsoft.com",
+        "builds.dotnet.microsoft.com",
+        "download.visualstudio.microsoft.com"]
+    },
+    "excludedCommands": ["docker compose *"],
+    "allowUnsandboxedCommands": false
+  }
+}
