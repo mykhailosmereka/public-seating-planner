@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="frontend/frontend.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="SeatingPlanner.AppHost/SeatingPlanner.AppHost.csproj" />
+  <Project Path="SeatingPlanner.Server/SeatingPlanner.Server.csproj" />
+</Solution>

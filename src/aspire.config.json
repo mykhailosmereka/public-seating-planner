@@ -1,0 +1,5 @@
+{
+  "appHost": {
+    "path": "SeatingPlanner.AppHost/SeatingPlanner.AppHost.csproj"
+  }
+}
