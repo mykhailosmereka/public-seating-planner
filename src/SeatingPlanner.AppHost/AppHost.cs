@@ -7,9 +7,14 @@ var postgres = builder.AddPostgres("postgres")
 
 var database = postgres.AddDatabase("seatingplannerdb");
 
+// Applies EF Core migrations for all modules (and seeds data in Development), then exits.
+var migrations = builder.AddProject<Projects.SeatingPlanner_MigrationService>("migrations")
+    .WithReference(database)
+    .WaitFor(database);
+
 var server = builder.AddProject<Projects.SeatingPlanner_Server>("server")
     .WithReference(database)
-    .WaitFor(database)
+    .WaitForCompletion(migrations)
     .WithHttpHealthCheck("/health")
     .WithExternalHttpEndpoints();
 

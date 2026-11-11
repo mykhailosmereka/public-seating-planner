@@ -1,8 +1,14 @@
 <Solution>
+  <Folder Name="/Modules/">
+    <Project Path="SeatingPlanner.Modules.Events/SeatingPlanner.Modules.Events.csproj" />
+  </Folder>
   <Project Path="frontend/frontend.esproj">
     <Build />
     <Deploy />
   </Project>
   <Project Path="SeatingPlanner.AppHost/SeatingPlanner.AppHost.csproj" />
+  <Project Path="SeatingPlanner.MigrationService/SeatingPlanner.MigrationService.csproj" />
   <Project Path="SeatingPlanner.Server/SeatingPlanner.Server.csproj" />
+  <Project Path="SeatingPlanner.ServiceDefaults/SeatingPlanner.ServiceDefaults.csproj" />
+  <Project Path="SeatingPlanner.Shared/SeatingPlanner.Shared.csproj" />
 </Solution>

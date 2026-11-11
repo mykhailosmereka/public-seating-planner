@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SeatingPlanner.Server\SeatingPlanner.Server.csproj" />
+    <ProjectReference Include="..\SeatingPlanner.MigrationService\SeatingPlanner.MigrationService.csproj" />
   </ItemGroup>
 
   <ItemGroup>
