@@ -9,8 +9,31 @@
 - Modular monolith: each module owns its data and exposes a narrow public contract; no cross-module access to another module's internals or tables.
 - Vertical slices: organise code by feature (request, handler, validation, persistence together), not by technical layer.
 
+### Layout (`src/`)
+- `SeatingPlanner.AppHost` — Aspire orchestration: postgres → `migrations` → `server` (`WaitForCompletion(migrations)`) → `frontend`.
+- `SeatingPlanner.MigrationService` — worker that runs every `IModuleDatabaseInitializer` (migrate, plus seed in Development) then exits; non-zero exit blocks Server startup. Also the EF design-time startup project.
+- `SeatingPlanner.Server` — composition root only: calls `builder.Add{Module}Module()` and `api.Map{Module}Endpoints()` under `/api`. No feature code here.
+- `SeatingPlanner.Modules.{Name}` — one project per module (reference implementation: `Modules.Events`).
+- `SeatingPlanner.Shared` — cross-cutting infrastructure only (`AddModuleDbContext`, `IModuleDatabaseInitializer`); no domain code.
+- `frontend` — Vite + React + TS.
+
+### Backend module conventions (see `Modules.Events`)
+- `{Name}Module.cs` is the module's **only public type**: `Add{Name}Module(IHostApplicationBuilder)` + `Map{Name}Endpoints(IEndpointRouteBuilder)` (a `MapGroup("/{name}")` with `WithTags`). Everything else is `internal sealed`.
+- Register the module in **both** `Server/Program.cs` and `MigrationService/Program.cs`, and add the project reference to both.
+- `Domain/` — entities with private ctors, `private set`, a static `Create(...)` factory that guards invariants, and `const` length limits reused by EF config. IDs are `Guid.CreateVersion7()`, `ValueGeneratedNever()`.
+- `Features/{FeatureName}/{FeatureName}.cs` — one static class per slice: nested request/response records, a `Map{FeatureName}` extension (`WithName`, `WithSummary`), and a private `HandleAsync` returning `TypedResults`. Inject the module's `DbContext` directly; reads use `AsNoTracking()` and project to the response record.
+- `Persistence/` — `{Name}DbContext` with `public const string Schema` and `HasDefaultSchema(Schema)`, registered via `builder.AddModuleDbContext<T>(Schema)` (own schema + own migrations history table). `{Name}DatabaseInitializer` implements `IModuleDatabaseInitializer`; dev seeding must be idempotent and use fixed GUIDs.
+- Add a request for each new endpoint to `Server/SeatingPlanner.Server.http`.
+
+### Frontend conventions
+- Feature folders under `src/frontend/src/features/{feature}/`: `api.ts` (typed `fetch` wrappers taking an `AbortSignal`, throwing on `!response.ok`), `{Component}.tsx`, co-located `{Component}.css`. `App.tsx` only composes features.
+- Call the backend with relative `/api/...` URLs (Vite proxies to the Server). Handle loading/error/empty states and abort in-flight fetches in `useEffect` cleanup.
+- Reuse the global classes/tokens in `App.css`/`index.css` (`card`, `section-header`, `refresh-button`, `error-message`, `loading-skeleton`, `visually-hidden`, `--item-bg` etc.) before adding new ones.
+
 ## Commands
-Standard `dotnet` (`build`, `test`, `run`, `format`, `ef`) and `npm` (`run build|test|lint|typecheck`) commands. Build automation goes through Cake.
+Standard `dotnet` (`build`, `test`, `run`, `format`, `ef`) and `npm` (`run build|lint`; `build` runs `tsc -b`, so it is also the typecheck) commands. Build automation goes through Cake.
+- Run everything: `dotnet run --project src/SeatingPlanner.AppHost`.
+- Add a migration: `dotnet ef migrations add <Name> --project src/SeatingPlanner.Modules.<Module> --startup-project src/SeatingPlanner.MigrationService --output-dir Persistence/Migrations`. Migrations are applied by the MigrationService at startup, not by `dotnet ef database update`.
 
 ## Environment variables
 Default ASP.NET Core / .NET variables apply: `ASPNETCORE_ENVIRONMENT`, `DOTNET_ENVIRONMENT`, `ASPNETCORE_URLS`, and connection strings via `ConnectionStrings__<name>`. Never read or commit `.env*` or `appsettings.Production.json`; they are deny-listed.
