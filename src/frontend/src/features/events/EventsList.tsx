@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchEvents, type EventSummary } from './api';
+import { CreateEventForm } from './CreateEventForm';
 import './EventsList.css';
 
 export function EventsList() {
@@ -60,6 +61,8 @@ export function EventsList() {
           <span>{loading ? 'Loading…' : 'Refresh'}</span>
         </button>
       </div>
+
+      <CreateEventForm onCreated={refresh} />
 
       {error && (
         <div className="error-message" role="alert">

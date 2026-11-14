@@ -4,3 +4,13 @@ GET {{Server_HostAddress}}/api/events/
 Accept: application/json
 
 ###
+
+POST {{Server_HostAddress}}/api/events/
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Summer Gala"
+}
+
+###

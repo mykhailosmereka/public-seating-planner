@@ -9,6 +9,7 @@ appsettings.*.local.json
 *.pfx
 *.p12
 .claude/settings.local.json
+.cc-writes/
 
 # ---------------------------------------------------------------
 # .NET build output
