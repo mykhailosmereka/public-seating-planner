@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SeatingPlanner.Modules.Events.Features.CreateEvent;
 using SeatingPlanner.Modules.Events.Features.GetEvents;
 using SeatingPlanner.Modules.Events.Persistence;
 using SeatingPlanner.Shared.Persistence;
@@ -27,6 +28,7 @@ public static class EventsModule
         var group = endpoints.MapGroup("/events").WithTags("Events");
 
         group.MapGetEvents();
+        group.MapCreateEvent();
 
         return endpoints;
     }
