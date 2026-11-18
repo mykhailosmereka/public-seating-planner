@@ -30,6 +30,12 @@
 - Call the backend with relative `/api/...` URLs (Vite proxies to the Server). Handle loading/error/empty states and abort in-flight fetches in `useEffect` cleanup.
 - Reuse the global classes/tokens in `App.css`/`index.css` (`card`, `section-header`, `refresh-button`, `error-message`, `loading-skeleton`, `visually-hidden`, `--item-bg` etc.) before adding new ones.
 
+## Dependencies
+- Only permissive open-source licenses (MIT, Apache-2.0, BSD, ISC, PostgreSQL, 0BSD, BlueOak, CC0; MPL-2.0 is acceptable when unmodified). No commercial, dual-licensed/source-available, or copyleft (GPL/AGPL/LGPL/SSPL/BUSL) packages, including transitive ones.
+- Known commercial-license traps to avoid: MediatR, AutoMapper, MassTransit (v9+), FluentAssertions (v8+), Duende IdentityServer, ImageSharp, QuestPDF (above revenue threshold), EPPlus (v5+), AG Grid Enterprise, MUI X Pro/Premium, Highcharts, Kendo/Telerik, DevExpress, Syncfusion.
+- Check a package's license (and its latest version's license) before adding it; if unsure, ask.
+- `node tools/check-licenses.mjs` checks every resolved NuGet and npm package (after restore/install) and runs as a Claude Code hook. Reviewed packages without an SPDX license id go in `tools/license-exceptions.json`, keyed by `name@version`.
+
 ## Commands
 Standard `dotnet` (`build`, `test`, `run`, `format`, `ef`) and `npm` (`run build|lint`; `build` runs `tsc -b`, so it is also the typecheck) commands. Build automation goes through Cake.
 - Run everything: `dotnet run --project src/SeatingPlanner.AppHost`.
