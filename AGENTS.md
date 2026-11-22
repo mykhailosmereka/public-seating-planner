@@ -17,24 +17,11 @@
 - `SeatingPlanner.Shared` — cross-cutting infrastructure only (`AddModuleDbContext`, `IModuleDatabaseInitializer`); no domain code.
 - `frontend` — Vite + React + TS.
 
-### Backend module conventions (see `Modules.Events`)
-- `{Name}Module.cs` is the module's **only public type**: `Add{Name}Module(IHostApplicationBuilder)` + `Map{Name}Endpoints(IEndpointRouteBuilder)` (a `MapGroup("/{name}")` with `WithTags`). Everything else is `internal sealed`.
-- Register the module in **both** `Server/Program.cs` and `MigrationService/Program.cs`, and add the project reference to both.
-- `Domain/` — entities with private ctors, `private set`, a static `Create(...)` factory that guards invariants, and `const` length limits reused by EF config. IDs are `Guid.CreateVersion7()`, `ValueGeneratedNever()`.
-- `Features/{FeatureName}/{FeatureName}.cs` — one static class per slice: nested request/response records, a `Map{FeatureName}` extension (`WithName`, `WithSummary`), and an `internal` `HandleAsync` (so tests can call it) returning `TypedResults`. Inject the module's `DbContext` directly; reads use `AsNoTracking()` and project to the response record.
-- `Persistence/` — `{Name}DbContext` with `public const string Schema` and `HasDefaultSchema(Schema)`, registered via `builder.AddModuleDbContext<T>(Schema)` (own schema + own migrations history table). `{Name}DatabaseInitializer` implements `IModuleDatabaseInitializer`; dev seeding must be idempotent and use fixed GUIDs.
-- Add a request for each new endpoint to `Server/SeatingPlanner.Server.http`.
+### Backend module conventions
+- Path-scoped rules in `.claude/rules/backend-modules.md` (reference implementation: `Modules.Events`).
 
-### Backend unit tests (see `tests/SeatingPlanner.Modules.Events.Tests`)
-- Setup for running tests (Docker, and the sandboxed PostgreSQL setup for Claude Code): `docs/running-tests.md`.
-- One test project per module: `tests/SeatingPlanner.{Project}.Tests`, listed in `src/SeatingPlanner.slnx` under `/Tests/`. The module's csproj grants `<InternalsVisibleTo Include="SeatingPlanner.{Project}.Tests" />`.
-- Stack: xUnit v3 (on Microsoft.Testing.Platform, opted in via the root `global.json`), Shouldly for assertions, Testcontainers.PostgreSql for the database. No mocking library, and no EF InMemory/SQLite: handlers run against real PostgreSQL (same image tag as the AppHost) so translation, collation and constraints match production.
-- Layout mirrors the module: `Domain/{Entity}Tests.cs`, `Features/{FeatureName}Tests.cs`, shared helpers in `Infrastructure/`.
-- Test slices by calling the feature's `HandleAsync` directly (declared `internal`, not `private`) and assert on the `TypedResults` type, status code and payload. HTTP-pipeline concerns (routing, binding) are out of scope for unit tests.
-- Database-backed classes take `PostgresFixture` and are marked `[Collection(PostgresCollection.Name)]`. The fixture starts one Testcontainers container per run, or uses the server in `SEATINGPLANNER_TEST_POSTGRES` when set (it then drops the databases it created). Every test calls `CreateDatabaseAsync()` to get its own freshly migrated database, so tests never share data. Pure domain tests stay outside the collection and need no database.
-- Use separate `DbContext` instances for Arrange (`database.SeedAsync`), Act (`database.CreateDbContext()`) and Assert (`database.GetAllEventsAsync()` or a new context), so the change tracker cannot mask what was persisted.
-- AAA: every test has explicit `// Arrange`, `// Act`, `// Assert` comments and exactly one Act. Name tests `{Method}_{Scenario}_{ExpectedResult}`. Use `[Theory]`/`[InlineData]` for variants of one rule. Pass `TestContext.Current.CancellationToken` to async calls.
-- Cover edge cases, not just the happy path: null/empty/whitespace input, exact length boundaries (min, max, max+1, values that become valid or invalid after trimming), case/Unicode variants, duplicates, no side effects on validation failure, cancellation, and `AsNoTracking` for reads.
+### Backend unit tests
+- Path-scoped rules in `.claude/rules/backend-tests.md` (reference: `tests/SeatingPlanner.Modules.Events.Tests`). Setup for running tests: `docs/running-tests.md`.
 
 ### Frontend conventions
 - Feature folders under `src/frontend/src/features/{feature}/`: `api.ts` (typed `fetch` wrappers taking an `AbortSignal`, throwing on `!response.ok`), `{Component}.tsx`, co-located `{Component}.css`. `App.tsx` only composes features.
