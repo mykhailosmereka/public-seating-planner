@@ -3,6 +3,9 @@
   <PropertyGroup>
     <!-- Commit every packages.lock.json. CI restores in locked mode (dotnet restore with the locked-mode option). -->
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <!-- Built-in .NET analyzers; report .editorconfig code-style (IDE*) rules at build time. -->
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
 </Project>
