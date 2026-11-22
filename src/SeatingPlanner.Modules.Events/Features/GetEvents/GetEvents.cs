@@ -17,7 +17,7 @@ internal static class GetEvents
             .WithName("GetEvents")
             .WithSummary("Lists all events.");
 
-    private static async Task<Ok<EventResponse[]>> HandleAsync(
+    internal static async Task<Ok<EventResponse[]>> HandleAsync(
         EventsDbContext db,
         CancellationToken cancellationToken)
     {

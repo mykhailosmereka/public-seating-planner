@@ -2,6 +2,9 @@
   <Folder Name="/Modules/">
     <Project Path="SeatingPlanner.Modules.Events/SeatingPlanner.Modules.Events.csproj" />
   </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="../tests/SeatingPlanner.Modules.Events.Tests/SeatingPlanner.Modules.Events.Tests.csproj" />
+  </Folder>
   <Project Path="frontend/frontend.esproj">
     <Build />
     <Deploy />

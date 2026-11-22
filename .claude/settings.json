@@ -1,7 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB": "1"
+  },
   "permissions": {
-    "defaultMode": "auto",
     "allow": [
       "Bash(dotnet build*)",
       "Bash(dotnet test*)",
@@ -13,6 +15,7 @@
       "Bash(npm run lint)",
       "Bash(npm run build)",
       "Bash(npm run test)",
+      "Bash(npm test)",
       "Bash(npm run typecheck)",
       "Bash(git status*)",
       "Bash(git diff*)",
@@ -21,6 +24,32 @@
       "Edit(~/.nuget/**)",
       "Edit(~/.local/share/NuGet/**)",
       "Edit(~/.npm/**)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(~/.claude/.env)",
+      "Read(//mnt/c/Users/*/.claude/.env)",
+      "Read(**/.ssh/**)",
+      "Read(~/.ssh/**)",
+      "Read(//mnt/c/Users/*/.ssh/**)",
+      "Read(**/.aws/**)",
+      "Read(~/.aws/**)",
+      "Read(//mnt/c/Users/*/.aws/**)",
+      "Read(~/.gnupg/**)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/appsettings.Production.json)",
+      "Edit(**/.claude/settings.json)",
+      "Edit(**/.claude/settings.local.json)",
+      "Edit(~/.claude/settings.json)",
+      "Edit(//mnt/c/Users/*/.claude/settings.json)",
+      "Bash(rm -rf*)",
+      "Bash(dotnet ef database drop*)",
+      "Bash(dotnet user-secrets*)",
+      "Bash(git reset*)",
+      "Bash(git push --force *)",
+      "Bash(sudo *)"
     ],
     "ask": [
       "Bash(dotnet ef database update*)",
@@ -31,39 +60,7 @@
       "Bash(git push*)",
       "Bash(git checkout*)"
     ],
-    "deny": [
-      "Read(**/.env)",
-      "Read(**/.env.*)",
-      "Read(~/.claude/.env)",
-      "Read(//mnt/c/Users/*/.claude/.env)",
-
-      "Read(**/.ssh/**)",
-      "Read(~/.ssh/**)",
-      "Read(//mnt/c/Users/*/.ssh/**)",
-      "Read(**/.aws/**)",
-      "Read(~/.aws/**)",
-      "Read(//mnt/c/Users/*/.aws/**)",
-      "Read(~/.gnupg/**)",
-
-      "Read(**/*.pem)",
-      "Read(**/*.key)",
-      "Read(**/appsettings.Production.json)",
-
-      "Edit(**/.claude/settings.json)",
-      "Edit(**/.claude/settings.local.json)",
-      "Edit(~/.claude/settings.json)",
-      "Edit(//mnt/c/Users/*/.claude/settings.json)",
-
-      "Bash(rm -rf*)",
-      "Bash(dotnet ef database drop*)",
-      "Bash(dotnet user-secrets*)",
-      "Bash(git reset*)",
-      "Bash(git push --force *)",
-      "Bash(sudo *)"
-    ]
-  },
-  "env": {
-    "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB": "1"
+    "defaultMode": "auto"
   },
   "hooks": {
     "SessionStart": [
@@ -78,15 +75,15 @@
       }
     ]
   },
+  "enabledPlugins": {
+    "typescript-lsp@claude-plugins-official": true,
+    "csharp-lsp@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true
+  },
   "sandbox": {
     "enabled": true,
-    "filesystem": {
-      "allowWrite": [
-        "~/.nuget/packages",
-        "~/.local/share/NuGet"
-      ],
-      "denyRead": ["**/.ssh", "**/.aws", "**/.env", "**/.env.*", "**/*.pem", "**/*.key", "**/appsettings.Production.json", "~/.microsoft/usersecrets"]
-    },
+    "allowUnsandboxedCommands": false,
     "network": {
       "allowedDomains": [
         "api.anthropic.com",
@@ -97,10 +94,25 @@
         "*.nuget.org",
         "dotnet.microsoft.com",
         "builds.dotnet.microsoft.com",
-        "download.visualstudio.microsoft.com"
+        "download.visualstudio.microsoft.com",
+        "127.0.0.1:54329"
       ]
     },
-    "excludedCommands": ["docker compose *"],
-    "allowUnsandboxedCommands": false
+    "filesystem": {
+      "allowWrite": [
+        "~/.nuget/packages",
+        "~/.local/share/NuGet"
+      ],
+      "denyRead": [
+        "**/.ssh",
+        "**/.aws",
+        "**/.env",
+        "**/.env.*",
+        "**/*.pem",
+        "**/*.key",
+        "**/appsettings.Production.json",
+        "~/.microsoft/usersecrets"
+      ]
+    }
   }
 }

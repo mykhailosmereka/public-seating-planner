@@ -22,7 +22,7 @@ internal static class CreateEvent
             .WithName("CreateEvent")
             .WithSummary("Creates an event. The name is trimmed and must be unique (case-insensitive).");
 
-    private static async Task<Results<Created<EventResponse>, ValidationProblem>> HandleAsync(
+    internal static async Task<Results<Created<EventResponse>, ValidationProblem>> HandleAsync(
         CreateEventRequest request,
         EventsDbContext db,
         CancellationToken cancellationToken)
