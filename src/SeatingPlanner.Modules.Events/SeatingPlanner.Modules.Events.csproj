@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="SeatingPlanner.Modules.Events.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SeatingPlanner.Shared\SeatingPlanner.Shared.csproj" />
   </ItemGroup>
 
