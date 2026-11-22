@@ -24,9 +24,7 @@
 - Path-scoped rules in `.claude/rules/backend-tests.md` (reference: `tests/SeatingPlanner.Modules.Events.Tests`). Setup for running tests: `docs/running-tests.md`.
 
 ### Frontend conventions
-- Feature folders under `src/frontend/src/features/{feature}/`: `api.ts` (typed `fetch` wrappers taking an `AbortSignal`, throwing on `!response.ok`), `{Component}.tsx`, co-located `{Component}.css`. `App.tsx` only composes features.
-- Call the backend with relative `/api/...` URLs (Vite proxies to the Server). Handle loading/error/empty states and abort in-flight fetches in `useEffect` cleanup.
-- Reuse the global classes/tokens in `App.css`/`index.css` (`card`, `section-header`, `refresh-button`, `error-message`, `loading-skeleton`, `visually-hidden`, `--item-bg` etc.) before adding new ones.
+- Path-scoped rules in `.claude/rules/frontend.md`.
 
 ## Dependencies
 - Only permissive open-source licenses (MIT, Apache-2.0, BSD, ISC, PostgreSQL, 0BSD, BlueOak, CC0; MPL-2.0 is acceptable when unmodified). No commercial, dual-licensed/source-available, or copyleft (GPL/AGPL/LGPL/SSPL/BUSL) packages, including transitive ones.
@@ -36,10 +34,9 @@
 - `node tools/check-licenses.mjs` checks every resolved NuGet and npm package (after restore/install) and runs as a Claude Code hook. Reviewed packages without an SPDX license id go in `tools/license-exceptions.json`, keyed by `name@version`.
 
 ## Commands
-Standard `dotnet` (`build`, `test`, `run`, `format`, `ef`) and `npm` (`run build|lint`; `build` runs `tsc -b`, so it is also the typecheck) commands. Build automation goes through Cake.
+Standard `dotnet` (`build`, `test`, `run`, `format`, `ef`) and `npm` (`run build|lint`; `build` runs `tsc -b`, so it is also the typecheck) commands.
 - Run everything: `dotnet run --project src/SeatingPlanner.AppHost`.
 - Run backend tests: `dotnet test --solution src/SeatingPlanner.slnx` (or `--project tests/<TestProject>`). Requires Docker for database-backed tests, unless `SEATINGPLANNER_TEST_POSTGRES` points at a test server.
-- Add a migration: `dotnet ef migrations add <Name> --project src/SeatingPlanner.Modules.<Module> --startup-project src/SeatingPlanner.MigrationService --output-dir Persistence/Migrations`. Migrations are applied by the MigrationService at startup, not by `dotnet ef database update`.
 
 ## Environment variables
 Default ASP.NET Core / .NET variables apply: `ASPNETCORE_ENVIRONMENT`, `DOTNET_ENVIRONMENT`, `ASPNETCORE_URLS`, and connection strings via `ConnectionStrings__<name>`. Never read or commit `.env*` or `appsettings.Production.json`; they are deny-listed.
@@ -57,8 +54,8 @@ Default ASP.NET Core / .NET variables apply: `ASPNETCORE_ENVIRONMENT`, `DOTNET_E
 ## Sandbox gotchas
 - `.claude/settings.json` and `settings.local.json` are edit-denied; ask the user to change them.
 - The `csharp-lsp` and `typescript-lsp` plugins need `csharp-ls` and `typescript-language-server` installed separately (setup and version pins: `docs/claude-code-lsp.md`). If LSP calls fail with a missing server, point the user there.
-- `.sh` files and `.devcontainer/**` must keep LF line endings (see `.gitattributes`).
-- The devcontainer firewall (`.devcontainer/init-firewall.sh`) is default-deny; new outbound domains must be added there and to `sandbox.network.allowedDomains` in `.claude/settings.json`.
+- `.sh` files must keep LF line endings (see `.gitattributes`).
+- New outbound domains must be added to `sandbox.network.allowedDomains` in `.claude/settings.json`.
 - `dotnet ef database update`, `npm install`, `git commit`, `git push` and `git checkout` require approval; `dotnet ef database drop`, `dotnet user-secrets` and `git reset` are denied.
 - On WSL the sandbox shell may resolve `npm`/`node` to the Windows install (`/mnt/c/Program Files/nodejs`), which cannot run inside the sandbox ("WSL 1 is not supported"). Load the Linux Node from nvm in the same command: `. ~/.nvm/nvm.sh && npm run build`.
 - Inside the sandbox, run `dotnet build`/`test` with `-m:1`. On Linux, MSBuild worker nodes bind their pipes at a hard-coded `/tmp/MSBuild<pid>` (ignoring `TMPDIR`), and `/tmp` is read-only, so the workers crash and the build fails with "0 Error(s)" or hangs. Do not add `-m:1` to repo files.
